@@ -1,3 +1,10 @@
+export interface Market {
+  market: string;
+  division: string;
+  min: number;
+  max: number;
+}
+
 export interface Product {
   id: number;
   slug: string;
@@ -7,6 +14,7 @@ export interface Product {
   categoryIcon: string;
   unit: string;
   image: string;
+
   today: number;
   yesterday: number;
   lastWeek: number;
@@ -16,9 +24,11 @@ export interface Product {
     dir: "up" | "down" | "flat";
     pct: number;
   };
+
+  markets: Market[];
 }
 
-// english to bangla
+// eng unit to bangla
 export function getBanglaUnit(unit: string) {
   if (unit === "kg") return "কেজি";
   if (unit === "litre") return "লিটার";
@@ -28,7 +38,7 @@ export function getBanglaUnit(unit: string) {
   return unit;
 }
 
-// english number to bangla
+// Eng Number to Bangla
 export function banglaNumber(num: number) {
   return num.toLocaleString("bn-BD", {
     maximumFractionDigits: 1,
