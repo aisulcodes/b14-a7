@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import CategoryProducts from "@/components/CategoryProducts";
 
@@ -18,7 +19,7 @@ const validCategories = [
   "mosla",
 ];
 
-export default async function CategoryPage({
+async function CategoryContent({
   params,
 }: CategoryPageProps) {
   const { slug } = await params;
@@ -27,7 +28,23 @@ export default async function CategoryPage({
     notFound();
   }
 
+  return <CategoryProducts slug={slug} />;
+}
+
+export default function CategoryPage({
+  params,
+}: CategoryPageProps) {
   return (
-    <CategoryProducts slug={slug} />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F1F7F3] py-20 text-center">
+          <p className="text-gray-500">
+            ক্যাটাগরির পণ্য লোড হচ্ছে...
+          </p>
+        </div>
+      }
+    >
+      <CategoryContent params={params} />
+    </Suspense>
   );
 }

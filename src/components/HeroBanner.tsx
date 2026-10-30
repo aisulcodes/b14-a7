@@ -1,16 +1,25 @@
+"use client";
+
 import Image from "next/image";
 import Herologo from "../assets/bazar-hero.png"
+import { useEffect, useState } from "react";
 
 export default function HeroBanner() {
-  const date = new Date();
+  const [banglaDate, setBanglaDate] = useState("");
 
-  const banglaDate = date.toLocaleDateString("bn-BD", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Dhaka",
-  });
+  useEffect(() => {
+    const date = new Date();
+
+    const formattedDate = date.toLocaleDateString("bn-BD", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Asia/Dhaka",
+    });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBanglaDate(formattedDate);
+  }, []);
 
   return (
     <section className="w-full bg-[#F1F7F3] px-4 py-8 sm:px-6 lg:px-8">
@@ -48,7 +57,7 @@ export default function HeroBanner() {
         {/* right image */}
         <div className="flex items-center justify-center lg:justify-end">
 
-          <div className="relative h-[220px] w-[260px] sm:h-[280px] sm:w-[340px] lg:h-[320px] lg:w-[400px]">
+          <div className="relative h-55 w-65 sm:h-70 sm:w-85 lg:h-80 lg:w-100">
 
             <Image
               src={Herologo}

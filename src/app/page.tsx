@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 import HeroBanner from "@/components/HeroBanner";
 import PriceIncrease from "@/components/PriceIncrease";
@@ -27,16 +27,17 @@ export default function Home() {
 
         const data = await res.json();
 
-        setProducts(
-          Array.isArray(data)
-            ? data
-            : Array.isArray(data.data)
-              ? data.data
-              : data.data?.products || []
-        );
-      } catch (error) {
-        console.error(error);
+        const productList: Product[] = Array.isArray(data)
+          ? data
+          : Array.isArray(data.data)
+            ? data.data
+            : Array.isArray(data.data?.products)
+              ? data.data.products
+              : [];
 
+        setProducts(productList);
+      } catch (error) {
+        console.error("Products Error:", error);
         setError("পণ্যের তথ্য লোড করা যায়নি।");
       } finally {
         setLoading(false);
@@ -49,8 +50,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F1F7F3]">
 
-      {/* hero banner */}
-      <HeroBanner />
+      {/* Hero Banner */}
+      <Suspense
+        fallback={
+          <div className="py-10 text-center text-gray-500">
+            ব্যানার লোড হচ্ছে...
+          </div>
+        }
+      >
+        <HeroBanner />
+      </Suspense>
 
       {/* Product Sections */}
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -59,18 +68,19 @@ export default function Home() {
         {loading && (
           <div className="py-20 text-center">
             <p className="text-gray-500">
-              পণ্যের তথ্য লোড হচ্ছে...</p>
+              পণ্যের তথ্য লোড হচ্ছে...
+            </p>
           </div>
         )}
 
-        {/* error */}
+        {/* Error */}
         {error && (
           <div className="rounded-lg bg-red-50 p-5 text-center text-red-600">
             {error}
           </div>
         )}
 
-        {/* products */}
+        {/* Products */}
         {!loading && !error && (
           <>
             <PriceIncrease products={products} />
