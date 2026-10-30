@@ -1,8 +1,8 @@
+
 import Link from "next/link";
-
 import { headers } from "next/headers";
-
 import { redirect, notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
 
@@ -18,17 +18,28 @@ interface ProductPageProps {
   }>;
 }
 
-export default async function ProductDetailsPage({
+// Loading Component
+function ProductLoading() {
+  return (
+    <main className="min-h-screen bg-[#F1F7F3] px-4 py-8">
+      <div className="mx-auto max-w-6xl">
+        <p className="text-gray-600">Loading product...</p>
+      </div>
+    </main>
+  );
+}
+
+// Main Product Component
+async function ProductDetails({
   params,
 }: ProductPageProps) {
 
   const { slug } = await params;
 
-
+  // Get User Session
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-
 
   if (!session) {
     redirect(
@@ -38,7 +49,7 @@ export default async function ProductDetailsPage({
     );
   }
 
-  // fetch API
+  // Fetch Products API
   const res = await fetch(
     "https://openapi.programming-hero.com/api/bazardor/products",
     {
@@ -60,11 +71,10 @@ export default async function ProductDetailsPage({
       ? data.data
       : data.data?.products || [];
 
-
+  // Find Single Product
   const product = products.find(
     (item) => item.slug === slug
   );
-
 
   if (!product) {
     notFound();
@@ -75,7 +85,7 @@ export default async function ProductDetailsPage({
 
       <div className="mx-auto max-w-6xl">
 
-
+        {/* Breadcrumb */}
         <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
 
           <Link
@@ -102,9 +112,7 @@ export default async function ProductDetailsPage({
 
         </nav>
 
-
         <ProductSummary product={product} />
-
 
         <div className="mt-6 rounded-xl border border-[#E5EBE7] bg-white p-5 sm:p-6">
 
@@ -115,6 +123,19 @@ export default async function ProductDetailsPage({
         </div>
 
       </div>
+
     </main>
+  );
+}
+
+// Page Component
+export default function ProductDetailsPage({
+  params,
+}: ProductPageProps) {
+
+  return (
+    <Suspense fallback={<ProductLoading />}>
+      <ProductDetails params={params} />
+    </Suspense>
   );
 }
